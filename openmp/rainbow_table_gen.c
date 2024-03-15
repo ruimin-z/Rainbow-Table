@@ -105,7 +105,7 @@ int main() {
     start_time = clock();
 
     // Parallelize the generation of password-hash pairs
-    // #pragma omp parallel for
+    #pragma omp parallel for
     for (int i = 0; i < n_chains; i++) {
         char* p = random_password(chars, length);
         // printf("Password: %s\n", p);
