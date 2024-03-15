@@ -7,6 +7,18 @@ To complie this project with `g++` compiler
 ```
 g++ .\rainbow_table_gen.C -o rainbow_gen -lssl -lcrypto
 ```
+
+For the Mpi implementation:
+MPI is not scanf friendly so we implemented it in a such a way that the user will have to add the input on the command line while running the code. e.g compile with the command: 
+```
+mpicc rainbowtable_mpi.c -o rainbowtable_mpi -lcrypto 
+
+To run the compiled binary file use the command:
+
+mpirun  <num processor> <./ binary file name> <length> <algorithm> <n_chains> <chain_length>
+
+e.g mpirun -np 5 ./rainbowtable_mpi 8 sha1 1000 100
+```
 You may need to add some other flags to indicate the complier complies the code using different parallel lib. For example, you need to add the flag `-fopenmp` to use OpenMP
 
 ## Usage
