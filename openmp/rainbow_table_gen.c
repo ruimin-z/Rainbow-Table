@@ -5,7 +5,6 @@
 #include <openssl/sha.h>
 #include <omp.h>
 
-
 #define MAX_LENGTH 100
 
 // Structure to represent a password-hash pair
@@ -21,7 +20,6 @@ char* reduce(char* hash, char* chars, int chars_len, int length) {
     for (int k = 0; k < SHA512_DIGEST_LENGTH; k++) {
         hash_int += hash_int * 256 + (int) hash[k];
     }
-    // printf("-> hash_int: %d\n", hash_int);
 
     // Reduce the hash to a password
     static char password[MAX_LENGTH];
@@ -70,17 +68,17 @@ void generate_hash(const char *password, const char *algorithm, char *hash) {
     }
 }
 
-
 int main(int argc, char *argv[]) {
-    //add number of threads to use in the simulation on command line 
-    if (argc != 2){
-        printf("Usage: %s <number_threads>\n", argv[0]);
+    if (argc != 2) {
+        printf("Usage: %s <num_threads>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
+    //changed the nuber of threads to be specified on command line 
     int num_threads = atoi(argv[1]);
     omp_set_num_threads(num_threads);
 
     srand(time(NULL));
+
     char* chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     int chars_len = strlen(chars);
 
@@ -110,28 +108,29 @@ int main(int argc, char *argv[]) {
     clock_t start_time, end_time;
     double computation_time;
 
+    // Start measuring time
     start_time = clock();
 
     // Parallelize the generation of password-hash pairs
     #pragma omp parallel for
     for (int i = 0; i < n_chains; i++) {
+        // Use private variables for each thread
         char* p = random_password(chars, length);
-        // printf("Password: %s\n", p);
         strcpy(pairs[i].password, p);
-        
+
         for (int j = 0; j < chain_length; j++) {
             // Hashing and reducing
             char hash[SHA512_DIGEST_LENGTH];
             generate_hash(p, algorithm, hash);
-            // printf("-> hash: %s\n", hash);
             p = reduce(hash, chars, chars_len, length);
-            // printf("-> reduced password: %s\n", p);
         }
         char hash[SHA512_DIGEST_LENGTH];
         generate_hash(p, algorithm, hash);
 
         strcpy(pairs[i].hash, hash);
     }
+
+    // End measuring time
     end_time = clock();
 
     // Save the sorted password-hash pairs to the file
@@ -164,9 +163,10 @@ int main(int argc, char *argv[]) {
 
     printf("Size of File Generated: %ld bytes\n", size);
 
+
     // Calculate and print the computation time
     computation_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
     printf("Rainbow table generation time: %.4f seconds\n", computation_time);
-
+   
     return 0;
 }
