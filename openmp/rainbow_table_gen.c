@@ -71,7 +71,15 @@ void generate_hash(const char *password, const char *algorithm, char *hash) {
 }
 
 
-int main() {
+int main(int argc, char *argv[]) {
+    //add number of threads to use in the simulation on command line 
+    if (argc != 2){
+        printf("Usage: %s <number_threads>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+    int num_threads = atoi(argv[1]);
+    omp_set_num_threads(num_threads);
+
     srand(time(NULL));
     char* chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     int chars_len = strlen(chars);
@@ -139,6 +147,22 @@ int main() {
 
     fclose(output_file);
     free(pairs);
+
+    // Print the number of threads used
+    printf("Number of Threads: %d\n", num_threads);
+
+     // Print the size of the generated file
+    FILE *file = fopen("rainbow_table.txt", "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    fseek(file, 0L, SEEK_END);
+    long size = ftell(file);
+    fclose(file);
+
+    printf("Size of File Generated: %ld bytes\n", size);
 
     // Calculate and print the computation time
     computation_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
