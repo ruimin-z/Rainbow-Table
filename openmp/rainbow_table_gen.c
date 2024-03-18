@@ -69,10 +69,12 @@ void generate_hash(const char *password, const char *algorithm, char *hash) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
+    if (argc != 6) {
         printf("Usage: %s <num_threads>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
+    double itime, ftime, exec_time;
+    itime = omp_get_wtime();
     //changed the nuber of threads to be specified on command line 
     int num_threads = atoi(argv[1]);
     omp_set_num_threads(num_threads);
@@ -82,21 +84,26 @@ int main(int argc, char *argv[]) {
     char* chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     int chars_len = strlen(chars);
 
-    int length;
-    printf("Enter the length of the password: ");
-    scanf("%d", &length);
+    // int length;
+    // printf("Enter the length of the password: ");
+    // scanf("%d", &length);
 
-    char algorithm[10];
-    printf("Enter the hashing algorithm (sha1, sha256, sha512):");
-    scanf("%s", algorithm);
+    // char algorithm[10];
+    // printf("Enter the hashing algorithm (sha1, sha256, sha512):");
+    // scanf("%s", algorithm);
 
-    int n_chains;
-    printf("Enter the number of chains: ");
-    scanf("%d", &n_chains);
+    // int n_chains;
+    // printf("Enter the number of chains: ");
+    // scanf("%d", &n_chains);
 
-    int chain_length;
-    printf("Enter the chain length: ");
-    scanf("%d", &chain_length);
+    // int chain_length;
+    // printf("Enter the chain length: ");
+    // scanf("%d", &chain_length);
+
+    int length = atoi(argv[2]);
+    const char *algorithm = argv[3];
+    int n_chains = atoi(argv[4]);
+    int chain_length = atoi(argv[5]);
 
     // Create an array to store password-hash pairs
     PasswordHashPair *pairs = (PasswordHashPair *)malloc(n_chains * sizeof(PasswordHashPair));
@@ -107,9 +114,6 @@ int main(int argc, char *argv[]) {
 
     clock_t start_time, end_time;
     double computation_time;
-
-    // Start measuring time
-    start_time = clock();
 
     // Parallelize the generation of password-hash pairs
     #pragma omp parallel for
@@ -131,7 +135,7 @@ int main(int argc, char *argv[]) {
     }
 
     // End measuring time
-    end_time = clock();
+    ftime = omp_get_wtime();
 
     // Save the sorted password-hash pairs to the file
     FILE *output_file = fopen("rainbow_table.txt", "w");
@@ -165,8 +169,8 @@ int main(int argc, char *argv[]) {
 
 
     // Calculate and print the computation time
-    computation_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
-    printf("Rainbow table generation time: %.4f seconds\n", computation_time);
+    exec_time = ftime - itime;
+    printf("Rainbow table generation time: %.4f seconds\n", exec_time);
    
     return 0;
 }
