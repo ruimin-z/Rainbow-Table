@@ -130,6 +130,7 @@ int main(int argc, char *argv[]) {
         }
         char hash[SHA512_DIGEST_LENGTH];
         generate_hash(p, algorithm, hash);
+        #pragma omp critical 
 
         strcpy(pairs[i].hash, hash);
     }
