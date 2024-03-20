@@ -40,5 +40,6 @@ Runing parameters:
     Write the initial password and the last hast into file
 ```
 This is the link to the paper from this research.
-```https://docs.google.com/document/d/1Xvt7DQMEF227X2AJCqxLVwsk7gewQeFsz4Y7A_uzYAw/edit
+```
+https://docs.google.com/document/d/1Xvt7DQMEF227X2AJCqxLVwsk7gewQeFsz4Y7A_uzYAw/edit
 ```
